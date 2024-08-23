@@ -4,6 +4,7 @@ import { Users } from './users.entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterUserDto } from './dto/registerUser.dto';
+import { Permission } from '../helpers/checkPermission.helper';
 
 @Injectable()
 export class UserService {
@@ -20,7 +21,11 @@ export class UserService {
     return await this.userRepository.save(createUSer);
   }
 
-  async update(id: number, userDto: UpdateUserDto): Promise<Users> {
+  async update(
+    id: number,
+    userDto: UpdateUserDto,
+    currentUser: Users,
+  ): Promise<Users> {
     let foundUser = await this.userRepository.findOne({
       where: { id: id },
     });
@@ -30,6 +35,8 @@ export class UserService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    Permission.check(id, currentUser);
     foundUser = { ...foundUser, ...userDto };
     return await this.userRepository.save(foundUser);
   }
