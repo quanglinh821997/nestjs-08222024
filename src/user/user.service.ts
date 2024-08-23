@@ -21,11 +21,7 @@ export class UserService {
     return await this.userRepository.save(createUSer);
   }
 
-  async update(
-    id: number,
-    userDto: UpdateUserDto,
-    currentUser: Users,
-  ): Promise<Users> {
+  async update(id: number, userDto: UpdateUserDto, currentUser: Users) {
     let foundUser = await this.userRepository.findOne({
       where: { id: id },
     });
@@ -38,7 +34,11 @@ export class UserService {
 
     Permission.check(id, currentUser);
     foundUser = { ...foundUser, ...userDto };
-    return await this.userRepository.save(foundUser);
+    const updateUser = await this.userRepository.save(foundUser);
+    return {
+      id: updateUser.id,
+      email: updateUser.email,
+    };
   }
 
   async getUserById(id: number): Promise<Users> {
