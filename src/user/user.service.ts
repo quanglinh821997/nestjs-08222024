@@ -1,9 +1,9 @@
-import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './users.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterUserDto } from './dto/registerUser.dto';
 
 @Injectable()
 export class UserService {
@@ -15,7 +15,7 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  async create(userDto: CreateUserDto): Promise<Users> {
+  async create(userDto: RegisterUserDto): Promise<Users> {
     const createUSer = await this.userRepository.create(userDto);
     return await this.userRepository.save(createUSer);
   }
@@ -59,5 +59,9 @@ export class UserService {
     }
     await this.userRepository.delete(foundUser);
     return foundUser.id;
+  }
+
+  findByEmail(email: string) {
+    return this.userRepository.findOneBy({ email: email });
   }
 }
